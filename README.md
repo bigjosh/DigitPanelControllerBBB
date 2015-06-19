@@ -90,6 +90,8 @@ Software for a BeagleBone Black-based, Wifi controlable LED display panel.
  Note that you really need the hotplug line or it doesn't work well. You also have to load `hostapd` here becuase it will crash if loaded before the interface is up.  
  
  We also start hostapd here becuase if you try to start it the normal way (before the wifi interface is up), it will crash.
+ 
+ Note that the `eth0` lines can not be commented out or else NetworkManager will take over network configuration and kill the above wlan0 static ip. Arg. 
 
 1.  Install dnsmasq...
   ```
