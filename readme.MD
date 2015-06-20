@@ -15,6 +15,14 @@ Software for a BeagleBone Black-based, Wifi controlable LED display panel.
  cd /opt/scripts/tools/
  ./update_kernel.sh
  ```
+ 
+1. Disable `wicd`...
+  ```
+  update-rc.d wicd disable
+  ```
+  
+  If you don't disable it, it will muck with the wifi adapter when you least expect it and cause unpredicable problems. THis took me forever to figure out. Argh. 
+  
 2. Disable HDMI. (NB: Skip for not, might now be nessisary)
 
  AdaFruit says that leaving HDMI on interfere with Wifi becuase it is so close to the adapter. 
