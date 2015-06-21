@@ -92,16 +92,17 @@ Software for a BeagleBone Black-based, Wifi controlable LED display panel.
   iface wlan0 inet static
   address 192.168.8.1
   netmask 255.255.255.0
-  post-up /usr/sbin/hostapd -B /etc/hostapd/hostapd.conf
   ```
  
  Note that you really need the hotplug line or it doesn't work well. You also have to load `hostapd` here becuase it will crash if loaded before the interface is up.  
- 
- We also start hostapd here becuase if you try to start it the normal way (before the wifi interface is up), it will crash.
- 
+
  Note that the `eth0` lines can not be commented out or else NetworkManager will take over network configuration and kill the above wlan0 static ip. Arg. 
 
-  
+1. Enable `hostapd` by editing `/etc/default/hostapd` and updating the line...
+  ```
+ DAEMON_CONF="/etc/hostapd/hostapd.conf"
+ ``` 
+
 1. Disable `udhcpd`...
   ```
   update-rc.d udhcpd disable
@@ -117,7 +118,6 @@ Software for a BeagleBone Black-based, Wifi controlable LED display panel.
 1. Set up dnsmasq...
 
   ```
-  
   #Have all DNS requests return this local machine
   # note that we need to hard code this because despite documentation, 
   # 0.0.0.0 as a special address that means "this machine" does not seem to work
