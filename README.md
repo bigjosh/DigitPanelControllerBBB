@@ -15,32 +15,21 @@ Software for a BeagleBone Black-based, Wifi controlable LED display panel.
  cd /opt/scripts/tools/
  ./update_kernel.sh
  ```
-2. Disable HDMI. (NB: Skip for not, might now be nessisary)
+1. Update the package index files by running...
+  ```
+  apt-get update
+  ```
 
- AdaFruit says that leaving HDMI on interfere with Wifi becuase it is so close to the adapter. 
- ```
- mkdir /mnt/boot
- mount /dev/mmcblk0p1 /mnt/boot
- nano /mnt/boot/uEnv.txt
- ```
- 
- Look for the lines like...
- ```
- ##Disable HDMI
- #cape_disable=capemgr.disable_partno=BB-BONELT-HDMI,BB-BONELT-HDMIN
- ```
- 
- ...and remove the `#` from the second line so it looks like this...
- 
- ```
- #Disable HDMI
- cape_disable=capemgr.disable_partno=BB-BONELT-HDMI,BB-BONELT-HDMIN
- ```
- 
 2. Plug in a Wifi adapter that can be an Access Point. I used [one with a RT5370 chipset](https://www.amazon.com/Wifi-With-Antenna-For-Raspberry/dp/B00H95C0A2/ref=as_sl_pc_ss_til?tag=joshcom-20&linkCode=w01&linkId=ONO3SOUD47R4JW5J&creativeASIN=B00H95C0A2).
 
+1. Disable the `wicd` daemon by running...
+  ```
+  update-rc.d wicd disable
+  ```
+  Otherwise `wicd` will try to reconfigure the Wifi adapter and clobber all the changes we are about to make.
 
-
+  TODO: Must find a way to have the port auto-DHCP any time cable is connected.   Once wicd is disabled, the ethernet port will no longer automatically DHCP when the cable is plugged in so the cable must be in at bootup. 
+  
 1. Find the name of the Wifi interface (it is `wlan0` for me)...
     ```
     iwconfig
@@ -61,10 +50,10 @@ Software for a BeagleBone Black-based, Wifi controlable LED display panel.
  
   ```
   interface=wlan0
-  driver=nl80211
   ssid=Digit57_C
   hw_mode=g
   channel=6
+  #driver=nl80211 
   #macaddr_acl=0
   #auth_algs=1
   #ignore_broadcast_ssid=0
@@ -75,23 +64,25 @@ Software for a BeagleBone Black-based, Wifi controlable LED display panel.
   #wpa_pairwise=TKIP
   #rsn_pairwise=CCMP
   ```
+NOTE: hostapd is very picky about the config file- there can't be able leading or trailing spaces on the lines. 
 
+TODO: I am able to get away with commenting out driver. Are there cases where it must be specified? 
     
 1. Update `/etc/network/interfaces` with (change the `wlan0` to whatever your was in the previous step)...
 
   ```
+  auto eth0
+  iface eth0 inet dhcp 
+  
   allow-hotplug wlan0
   iface wlan0 inet static
   address 192.168.8.1
   netmask 255.255.255.0
-  post-up /usr/sbin/hostapd -B /etc/hostapd/hostapd.conf
   ```
  
- Note that you really need the hotplug line or it doesn't work well. You also have to load `hostapd` here becuase it will crash if loaded before the interface is up.  
- 
- We also start hostapd here becuase if you try to start it the normal way (before the wifi interface is up), it will crash.
- 
- Note that the `eth0` lines can not be commented out or else NetworkManager will take over network configuration and kill the above wlan0 static ip. Arg. 
+ Note that you really need the hotplug line or it doesn't work reliably. 
+  
+ Note that the `eth0` lines must be uncommented or the interface will not come up. I think this is because `wicd` previously managed this interface and we needed to disable it above. 
 
 1.  Install dnsmasq...
   ```
