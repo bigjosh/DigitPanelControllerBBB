@@ -157,17 +157,17 @@ Software for a BeagleBone Black-based, Wifi controlable LED display panel.
   
 1. Set up Apache2 to listen on port 81 in `/etc/apache2/ports.conf`...
   ```
-  NameVirtualHost *:81
-  Listen 81
+  NameVirtualHost *:80
+  Listen 80
   ```
   
 1. Add apache config file to `/etc/apache2/sites-available/digit57.conf`...
   ```
-  <VirtualHost *:81>
+  <VirtualHost *:80>
         RedirectMatch temp / http://digit57.com/test.html
   </VirtualHost>
 
-  <VirtualHost *:81>
+  <VirtualHost *:80>
 
         ServerAdmin webmaster@localhost
 
@@ -198,3 +198,9 @@ Software for a BeagleBone Black-based, Wifi controlable LED display panel.
         CustomLog ${APACHE_LOG_DIR}/access.log combined
   </VirtualHost>
   ```
+1. Kill bonescript so we can use port 80...
+  ```
+   systemctl disable bonescript.socket
+   ```
+   
+   
