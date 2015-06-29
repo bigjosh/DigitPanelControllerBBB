@@ -150,10 +150,51 @@ Software for a BeagleBone Black-based, Wifi controlable LED display panel.
   ...and answer `Y` when it ask if you want to save the rules.
   This will save the iptables rules we made so that they load automatically on bootup. 
   
-1. Add a redirect to steer all internet http traffic to our local redirection server...
+1. Add a redirect to steer all internet http traffic from the Wifi to our special server...
   ```
   iptables -t nat -A PREROUTING -i wlan0 -p tcp --dport 80 -j REDIRECT --to-port 81
   ```
   
-1. Install the master and redirect httpd servers. Don't forget to chmod the cgi files.
+1. Set up Apache2 to listen on port 81 in `/etc/apache2/ports.conf`...
+  ```
+  NameVirtualHost *:81
+  Listen 81
+  ```
   
+1. Add apache config file to `/etc/apache2/sites-available/digit57.conf`...
+  ```
+  <VirtualHost *:81>
+        RedirectMatch temp / http://digit57.com/test.html
+  </VirtualHost>
+
+  <VirtualHost *:81>
+
+        ServerAdmin webmaster@localhost
+
+        ServerName digit57.com
+        DocumentRoot /root/cewt/digit57.com/www
+
+        <Directory /root/cewt/digit57.com/www>
+                Options Indexes FollowSymLinks MultiViews
+                AllowOverride None
+                Order allow,deny
+                allow from all
+        </Directory>
+
+        ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
+        <Directory "/usr/lib/cgi-bin">
+                AllowOverride None
+                Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+                Order allow,deny
+                Allow from all
+        </Directory>
+
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+
+        # Possible values include: debug, info, notice, warn, error, crit,
+        # alert, emerg.
+        LogLevel warn
+
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+  </VirtualHost>
+  ```
