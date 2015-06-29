@@ -199,7 +199,7 @@ Software for a BeagleBone Black-based, Wifi controlable LED display panel.
   </VirtualHost>
   ```
 1. Kill bonescript so we can use port 80...
-  ```
+   ```
    systemctl disable bonescript.socket
    ```
    
