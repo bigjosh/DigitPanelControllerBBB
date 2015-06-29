@@ -21,14 +21,14 @@ Software for a BeagleBone Black-based, Wifi controlable LED display panel.
   update-rc.d wicd disable
   ```
   
-  If you don't disable it, it will muck with the wifi adapter when you least expect it and cause unpredicable problems. THis took me forever to figure out. Argh. 
+  If you don't disable it, it will muck with the wifi adapter when you least expect it and cause unpredicable problems. This took me forever to figure out. Argh. 
   
-2. Disable HDMI. (NB: Skip for not, might now be nessisary)
+2. Disable HDMI. (NB: Skip for now, might now be nessisary)
 
  AdaFruit says that leaving HDMI on interfere with Wifi becuase it is so close to the adapter. 
  ```
  mkdir /mnt/boot
- mount /dev/mmcblk0p1 /mnt/boot
+ mount /dev/mmcblk0p1/mnt/boot
  nano /mnt/boot/uEnv.txt
  ```
  
@@ -68,11 +68,11 @@ Software for a BeagleBone Black-based, Wifi controlable LED display panel.
  ..and create `/etc/hostapd/hostapd.conf` as so...
  
   ```
+  ssid=Digit57
   interface=wlan0
-  driver=nl80211
-  ssid=Digit57_C
   hw_mode=g
   channel=6
+  #driver=nl80211
   #macaddr_acl=0
   #auth_algs=1
   #ignore_broadcast_ssid=0
@@ -108,7 +108,7 @@ Software for a BeagleBone Black-based, Wifi controlable LED display panel.
   update-rc.d udhcpd disable
   ```
   
-  Note that is would be nice to be able to use `udhcpd`, but there seems to be a bug that it is listens on all interfaces, despite specifying an interface in the config file. 
+  Note that is would be nice to be able to use `udhcpd`, but there does not seem to be a way to have it give out different addresses on different interfaces, and no way to run multiple copies bound to different interfaces.
   
 1.  Install dnsmasq...
   ```
@@ -132,7 +132,7 @@ Software for a BeagleBone Black-based, Wifi controlable LED display panel.
   dhcp-option=tag:nocapture, option:dns-server
 
 
-  #only listen for DNS and DHCP requests on the wifi network
+  #only listen for DNS and DHCP requests on the wifi and USB networks
   interface=wlan0
   interface=usb0
   ```
@@ -142,3 +142,18 @@ Software for a BeagleBone Black-based, Wifi controlable LED display panel.
   ```
   systemctl enable dnsmasq.service
   ```    
+
+1. Install the iptables-persistent service....
+  ```
+  apt-get install iptables-persistent
+  ```
+  ...and answer `Y` when it ask if you want to save the rules.
+  This will save the iptables rules we made so that they load automatically on bootup. 
+  
+1. Add a redirect to steer all internet http traffic to our local redirection server...
+  ```
+  iptables -t nat -A PREROUTING -i wlan0 -p tcp --dport 80 -j REDIRECT --to-port 81
+  ```
+  
+1. Install the master and redirect httpd servers. Don't forget to chmod the cgi files.
+  
