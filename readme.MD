@@ -212,9 +212,11 @@ Software for a BeagleBone Black-based, Wifi controlable LED display panel.
    systemctl disable bonescript.socket
    ```
 1. Make the www files...
+  
   ```
   mkdir /www
   mkdir /www/digit57.com
   cp control.html
   ```
+  ... we put these in a new `/www/` directory becuase I had problems with FORBIDEN errors on the `.htaccess` when I tried to put them someplace else, which doesn't make sense becuase I have `AllowOverride` turned off. Oh well.
    
