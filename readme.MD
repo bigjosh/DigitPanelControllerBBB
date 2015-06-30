@@ -115,10 +115,16 @@ Software for a BeagleBone Black-based, Wifi controlable LED display panel.
 1. Set up dnsmasq...
 
   ```
-  #Have all DNS requests return this local machine
-  # note that we need to hard code this because despite documentation, 
-  # 0.0.0.0 as a special address that means "this machine" does not seem to work
-  address=/#/192.168.8.1
+  
+  #Note that the wildcard address must be on a different subnet so the requesting machine
+  #will send to the default gateway (us) and we will intercept it and issue an HTTP redirect
+  address=/#/1.1.1.1
+
+  #Have DNS requests for the captive domain return this local machine
+  #note that we need to hard code this because despite documentation,
+  #0.0.0.0 does not seem to return the local ip address
+  address=/digit57.com/192.168.8.1
+
 
   #enable dhcp server
   #only send a default gateway and dns server to captive interfaces
