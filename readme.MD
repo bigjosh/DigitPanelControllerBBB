@@ -147,9 +147,12 @@ Software for a BeagleBone Black-based, Wifi controlable LED display panel.
   ...and answer `Y` when it ask if you want to save the rules.
   This will save the iptables rules we made so that they load automatically on bootup. 
   
-1. Add a redirect to steer all internet http traffic from the Wifi to our special server...
+  TODO: Do we really need this or does the rules.v4 get loaded automatically
+  
+1. Add a redirect to steer all internet http traffic from the Wifi to our special server, and save it so it gets locaed automatically on boot...
   ```
   iptables -t nat -A PREROUTING -i wlan0 -p tcp --dport 80 -j REDIRECT --to-port 80
+  iptables-save >/etc/iptables/rules.v4
   ```
   
   TODO: save the iptables
