@@ -92,16 +92,13 @@ Software for a BeagleBone Black-based, Wifi controlable LED display panel.
   iface wlan0 inet static
   address 192.168.8.1
   netmask 255.255.255.0
+  
+  post-up /usr/sbin/hostapd -B /etc/hostapd/hostapd.conf
   ```
  
- Note that you really need the hotplug line or it doesn't work well. You also have to load `hostapd` here becuase it will crash if loaded before the interface is up.  
+ Note that you really need the hotplug line or it doesn't work well. You also have to load `hostapd` here becuase it will crash if loaded the normal way from `/etc/hostapd/hostapd.conf`.
 
  Note that the `eth0` lines can not be commented out or else NetworkManager will take over network configuration and kill the above wlan0 static ip. Arg. 
-
-1. Enable `hostapd` by editing `/etc/default/hostapd` and updating the line...
-  ```
- DAEMON_CONF="/etc/hostapd/hostapd.conf"
- ``` 
 
 1. Disable `udhcpd`...
   ```
@@ -152,10 +149,12 @@ Software for a BeagleBone Black-based, Wifi controlable LED display panel.
   
 1. Add a redirect to steer all internet http traffic from the Wifi to our special server...
   ```
-  iptables -t nat -A PREROUTING -i wlan0 -p tcp --dport 80 -j REDIRECT --to-port 81
+  iptables -t nat -A PREROUTING -i wlan0 -p tcp --dport 80 -j REDIRECT --to-port 80
   ```
   
-1. Set up Apache2 to listen on port 81 in `/etc/apache2/ports.conf`...
+  TODO: save the iptables
+  
+1. Set up Apache2 to listen on port 80 in `/etc/apache2/ports.conf`...
   ```
   NameVirtualHost *:80
   Listen 80
@@ -164,7 +163,7 @@ Software for a BeagleBone Black-based, Wifi controlable LED display panel.
 1. Add apache config file to `/etc/apache2/sites-available/digit57.conf`...
   ```
   <VirtualHost *:80>
-        RedirectMatch temp / http://digit57.com/test.html
+        RedirectMatch temp / http://digit57.com/controler.html
   </VirtualHost>
 
   <VirtualHost *:80>
@@ -172,9 +171,9 @@ Software for a BeagleBone Black-based, Wifi controlable LED display panel.
         ServerAdmin webmaster@localhost
 
         ServerName digit57.com
-        DocumentRoot /root/cewt/digit57.com/www
+        DocumentRoot /www/digit57.com
 
-        <Directory /root/cewt/digit57.com/www>
+        <Directory /www/digit57.com>
                 Options Indexes FollowSymLinks MultiViews
                 AllowOverride None
                 Order allow,deny
@@ -199,9 +198,14 @@ Software for a BeagleBone Black-based, Wifi controlable LED display panel.
   </VirtualHost>
   ```
 1. Kill bonescript so we can use port 80...
+
    ```
    systemctl disable bonescript.socket
    ```
-   
-   
+1. Make the www files...
+  ```
+  mkdir /www
+  mkdir /www/digit57.com
+  cp control.html
+  ```
    
