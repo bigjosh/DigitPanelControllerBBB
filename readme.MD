@@ -171,48 +171,58 @@ Software for a BeagleBone Black-based, Wifi controlable LED display panel.
   
 1. Add apache config file to `/etc/apache2/sites-available/digit57.conf`...
   ```
-  <VirtualHost *:80>
-        RedirectMatch temp / http://digit57.com/controler.html
-  </VirtualHost>
 
-  <VirtualHost *:80>
+<VirtualHost *:80>
+        RedirectMatch temp / http://digit57.com/test.html
+        ErrorLog ${APACHE_LOG_DIR}/redirect.error.log
+</VirtualHost>
+
+<VirtualHost *:80>
 
         ServerAdmin webmaster@localhost
 
         ServerName digit57.com
         DocumentRoot /www/digit57.com
-
-        <Directory /www/digit57.com>
-                Options Indexes FollowSymLinks MultiViews
+        <Directory /www/digit57.com >
                 AllowOverride None
                 Order allow,deny
                 allow from all
         </Directory>
 
-        ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
-        <Directory "/usr/lib/cgi-bin">
+
+        ScriptAlias /cgi-bin/ /www/digit57.com/cgi-bin/
+        <Directory "/www/digit57.com/cgi-bin">
                 AllowOverride None
                 Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
                 Order allow,deny
                 Allow from all
         </Directory>
 
-        ErrorLog ${APACHE_LOG_DIR}/error.log
+        ErrorLog ${APACHE_LOG_DIR}/digit57.error.log
 
         # Possible values include: debug, info, notice, warn, error, crit,
         # alert, emerg.
         LogLevel warn
 
         CustomLog ${APACHE_LOG_DIR}/access.log combined
-  </VirtualHost>
+</VirtualHost>
+
   ```
+
+1. Make the site active with...
+
+    ```
+    a2ensite digit57.conf
+    ```
+
 1. Kill bonescript so we can use port 80...
 
    ```
    systemctl disable bonescript.socket
    ```
+
 1. Make the www files...
-  
+
   ```
   mkdir /www
   mkdir /www/digit57.com
