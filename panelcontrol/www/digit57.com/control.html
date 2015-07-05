@@ -83,21 +83,34 @@
 				<label>Brightness</label></br>
                 <div id="light-brightness-group" class="btn-group btn-group-justified btn-group-lg" data-toggle="buttons">
                     <label class="btn btn-default btn-grey-dark">
-                        <input type="radio" name="brightness" value="-0.90" id="light-brightness-4">10%</input>
+                        <input type="radio" name="brightness" value="0.10" id="light-brightness-4">10%</input>
                     </label>
                     <label class="btn btn-default btn-grey-mid">
-                        <input type="radio" name="brightness" value="-0.75" id="light-brightness-3">25%</input>
+                        <input type="radio" name="brightness" value="0.25" id="light-brightness-3">25%</input>
                     </label>
                     <label class="btn btn-default btn-grey-light active">
-                        <input type="radio" checked name="brightness" value="-0.50" id="light-brightness-2">50%</input>
+                        <input type="radio" checked id="half" name="brightness" value="0.50" id="light-brightness-2">50%</input>
                     </label>
                     <label class="btn btn-default btn-white pick" >
-                        <input type="radio" name="brightness" value="0" id="light-brightness-1">100%</input>
+                        <input type="radio" id="full" name="brightness" value="1.0" id="light-brightness-1">100%</input>
                     </label>
                 </div>
          </div>
 
             <br />
+
+<div class="noful-alert">
+    <div id="nofull" class="alert alert-danger fade-in" hidden>
+
+      <a href="#" class="close" onClick="$('#nofull').hide();">&times;</a>
+
+	<strong>Brightness Reduced</strong> <br> For power reasons, white and glow are limited to 50% brightness on this demo panel.<br>
+                Full brightness is available for panels installed on dedicated circuits in the actual clock.
+
+    </div>
+
+</div>
+
             <div class="top-buffer">
                 <button type="submit" class="btn btn-info  btn-lg" style="width: 100%;">Go!</button>
 	    </div>
@@ -166,17 +179,35 @@
 
 				// validate hex string
 				hex = String(hex).replace(/[^0-9a-f]/gi, '');
-				if (hex.length < 6) {
-					hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
-y
-				}
+
 				lum = lum || 0;
+
+
+				// For now, max white out at 75% to not overload power
+				if ( (hex.toLowerCase() == "ffffff" || hex.toLowerCase()== "ff9933")  && lum == 1.00 ) {
+	
+					lum = 0.50;
+					$("#nofull").show();
+				
+				} 
+			
+
+				// Peak power = 300 watts /  27 strings  ( 97 pixels per string)
+				// Power usage per string per color at 100%:
+				// Red = 1.2A
+				// Blue = 1.525
+				// Green = 1.536
+				// ==============
+				// White ~= 4A 
+
+				// We only have 50A power supply available, so limit brightness
+				// aproximate 1.5A per color becuase I don't know javascript
 
 				// convert to decimal and change luminosity
 				var rgb = '', c, i;
 				for (i = 0; i < 3; i++) {
 					c = parseInt(hex.substr(i*2,2), 16);
-					c = Math.round(Math.min(Math.max(0, c + (c * lum)), 255)).toString(16);
+					c = Math.round(Math.min(Math.max(0, (c * lum) ) , 255)).toString(16);
 					rgb += ("00"+c).substr(c.length);
 				}
 
