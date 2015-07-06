@@ -104,8 +104,8 @@
 
       <a href="#" class="close" onClick="$('#nofull').hide();">&times;</a>
 
-	<strong>Brightness Reduced</strong> <br> For power reasons, white and glow are limited to 50% brightness on this demo panel.<br>
-                Full brightness is available for panels installed on dedicated circuits in the actual clock.
+	<strong>Area Reduced</strong> <br> The area is reduced for high brightnesses of white and glow on this demo digit.<br>
+	            Full area is available for panels installed on dedicated circuits in the actual clock.
 
     </div>
 
@@ -121,7 +121,6 @@
 		
 		<script>
 			var colorParameter;
-			var timeParameter;
 			var brightnessParameter;
 			
 			window.mobilecheck = function() {
@@ -146,20 +145,38 @@
 				brightnessParameter = $("input[name=brightness]:checked").val();
 				colorParameter = $("input[name=color]:checked").val();
 				
+				
 				if (brightnessParameter == null || colorParameter == null) {
 
 					alert("Please select values for Color and Brightness");
 					return;
 				} else {
 					$("button[type=submit]").attr("disabled", "disabled");
-					colorParameter = updateColorLuminance(colorParameter, brightnessParameter);
-					submitData(colorParameter);
+					
+					
+					if (brightnessParameter=="1.0" && ( colorParameter.toLowerCase()=="ffffff" || colorParameter=="ff9933") ) {
+	
+
+						// Demo power supply cant supply enough to do full area at 100% white or glow
+						
+						command = "W";	//Reduced area 
+						
+						// Tell the user we reduced..
+						$("#nofull").show();
+					
+					} else {
+				
+						command = "C";
+						colorParameter = updateColorLuminance(colorParameter, brightnessParameter);
+					}
+					
+					submitData(command, colorParameter);
 				}
 			}
 			
-			function submitData(colorString) {			
+			function submitData(commandString,colorString) {			
 				$.ajax({
-  					url: "cgi-bin/light.cgi?C"+ colorString + "&when=" + $.now()
+  					url: "cgi-bin/light.cgi?"+commandString+ colorString + "&when=" + $.now()
 				}).done(function() {
 				    // resetForm(); Save Values...
 				    $("button[type=submit]").removeAttr("disabled");
@@ -182,14 +199,6 @@
 
 				lum = lum || 0;
 
-
-				// For now, max white out at 75% to not overload power
-				if ( (hex.toLowerCase() == "ffffff" || hex.toLowerCase()== "ff9933")  && lum == 1.00 ) {
-	
-					lum = 0.50;
-					$("#nofull").show();
-				
-				} 
 			
 
 				// Peak power = 300 watts /  27 strings  ( 97 pixels per string)
