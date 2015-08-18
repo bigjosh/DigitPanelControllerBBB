@@ -174,14 +174,14 @@
 				}
 			}
 			
-			function submitData(commandString,colorString) {	
+			function submitData(commandString,colorString) {			
 				$.ajax({
   					url: "cgi-bin/light.cgi?"+commandString+ colorString + "&when=" + $.now()
 				}).done(function() {
 				    // resetForm(); Save Values...
 				    $("button[type=submit]").removeAttr("disabled");
 				}).fail(function() {
-    				alert( "Sorry. There was an error. Please refresh the page." );
+    				alert( "Sorry. There was an error. Please refresh the page."+commandString+colorString );
     				//resetForm();
   				});
 			}
