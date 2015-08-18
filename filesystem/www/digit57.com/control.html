@@ -159,14 +159,14 @@
 
 						// Demo power supply cant supply enough to do full area at 100% white or glow
 						
-						command = "W";	//Reduced area 
+						command = "H";	//Reduced area 
 						
 						// Tell the user we reduced..
 						$("#nofull").show();
 					
 					} else {
 				
-						command = "C";
+						command = "F";
 						colorParameter = updateColorLuminance(colorParameter, brightnessParameter);
 					}
 					
@@ -174,7 +174,7 @@
 				}
 			}
 			
-			function submitData(commandString,colorString) {			
+			function submitData(commandString,colorString) {	
 				$.ajax({
   					url: "cgi-bin/light.cgi?"+commandString+ colorString + "&when=" + $.now()
 				}).done(function() {
