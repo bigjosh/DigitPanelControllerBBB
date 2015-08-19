@@ -75,11 +75,8 @@
 <body>
 
     <div class="container" id="controlform">
-        <h3>Digit 57 Control</h3>
         <div class="top-buffer">
-            <label>Color</label>
-            </br>
-            <div id="light-color-group" class="btn-group btn-group-justified btn-group-lg" data-toggle="buttons">
+            <div id="light-color-group" class="btn-group btn-group-justified " data-toggle="buttons">
                 <label class="btn btn-danger">
                     <input type="radio" name="color" value="FF0000" />Red</input>
                 </label>
@@ -97,9 +94,7 @@
         </div>
 
         <div class="top-buffer">
-            <label>Brightness</label>
-            </br>
-            <div id="light-brightness-group" class="btn-group btn-group-justified btn-group-lg" data-toggle="buttons">
+            <div id="light-brightness-group" class="btn-group btn-group-justified " data-toggle="buttons">
                 <label class="btn btn-default btn-grey-dark">
                     <input type="radio" name="brightness" value="0.10" id="light-brightness-4">10%</input>
                 </label>
@@ -130,31 +125,41 @@
 
         </div>
 
+
+
+
+<div class="top-buffer">
+            
+            <button type="submit" id="set_button" class="btn btn-info btn-lg" style="width: 100%;">Show!</button>
+</div>
+
         <div class="top-buffer">
-            <button type="submit" id="set_button" class="btn btn-info  btn-lg" style="width: 100%;">Go!</button>
+
+<button type="submit" id="bullseye_button" class="btn btn-info"  style="width: 100%;" >Hypno!</button></td>
+</div>
+
+
+
+        <div class="top-buffer">
+
+            <button type="submit" id="stars_button" class="btn btn-info"  style="width: 100%;">Sparkle!</button>
+    
+        </div>
+
+                
+
+<hr>
+
+        <div class="top-buffer">
+            <button type="submit" id="plasma_button" class="btn btn-info" style="width: 100%;">Plasma!</button>
         </div>
 
         <div class="top-buffer">
-            <button type="submit" id="bullseye_button" class="btn btn-info  btn-lg" style="width: 100%;">Hypno!</button>
-        </div>
-
-
-        <div class="top-buffer">
-            <button type="submit" id="stars_button" class="btn btn-info  btn-lg" style="width: 100%;">Sparkle!</button>
-        </div>
-
-<br>
-
-        <div class="top-buffer">
-            <button type="submit" id="plasma_button" class="btn btn-info  btn-lg" style="width: 100%;">Plasma!</button>
+            <button type="submit" id="rockrose_button" class="btn btn-info" style="width: 100%;">Rockrose!</button>
         </div>
 
         <div class="top-buffer">
-            <button type="submit" id="rockrose_button" class="btn btn-info  btn-lg" style="width: 100%;">Rockrose!</button>
-        </div>
-
-        <div class="top-buffer">
-            <button type="submit" id="off_button" class="btn btn-lg .btn-default" style="width: 100%;">Off!</button>
+            <button type="submit" id="off_button" class="btn .btn-default" style="width: 100%;">Off!</button>
         </div>
 
 
@@ -226,7 +231,8 @@
                 return;
                 
             }
-            
+
+            colorParameter = updateColorLuminance(colorParameter, brightnessParameter);
                  
             if (pressedButtonId=="set_button") {
                 
@@ -244,7 +250,6 @@
                 } else {
 
                     command = "F";
-                    colorParameter = updateColorLuminance(colorParameter, brightnessParameter);
                 }
 
                 submitData(command, colorParameter);
@@ -270,13 +275,13 @@
 
         function submitData(commandString, colorString) {
             
-            $("button[type=submit]").attr("disabled", "disabled");
+//            $("button[type=submit]").attr("disabled", "disabled");
             
             $.ajax({
                 url: "cgi-bin/light.cgi?" + commandString + colorString + "&when=" + $.now()
             }).done(function () {
                 // resetForm(); Save Values...
-                $("button[type=submit]").removeAttr("disabled");
+//                $("button[type=submit]").removeAttr("disabled");
             }).fail(function () {
                 alert("Sorry. There was an error. Please refresh the page." + commandString + colorString);
                 //resetForm();
