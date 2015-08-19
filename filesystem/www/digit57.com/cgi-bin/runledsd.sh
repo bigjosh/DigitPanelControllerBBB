@@ -4,8 +4,6 @@ lockdir=/tmp/leds.locks
 pipe=$lockdir/fifo
 pidfile=$lockdir/pid
 
-echo Starting runledsd...
-
 # try to atmoically create a directory. If it succeeds than we have exclusive lock
 if mkdir "$lockdir"; then
 
