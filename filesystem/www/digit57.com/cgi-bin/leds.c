@@ -84,53 +84,53 @@ void sendOPCPixels() {
 
 struct periodic_info
 {
-	int timer_fd;
-	unsigned long long wakeups_missed;
+    int timer_fd;
+    unsigned long long wakeups_missed;
 };
 
 static int make_periodic (unsigned int period, struct periodic_info *info)
 {
-	int ret;
-	unsigned int ns;
-	unsigned int sec;
-	int fd;
-	struct itimerspec itval;
+    int ret;
+    unsigned int ns;
+    unsigned int sec;
+    int fd;
+    struct itimerspec itval;
 
-	/* Create the timer */
-	fd = timerfd_create (CLOCK_MONOTONIC, 0);
-	info->wakeups_missed = 0;
-	info->timer_fd = fd;
-	if (fd == -1)
-		return fd;
+    /* Create the timer */
+    fd = timerfd_create (CLOCK_MONOTONIC, 0);
+    info->wakeups_missed = 0;
+    info->timer_fd = fd;
+    if (fd == -1)
+        return fd;
 
-	/* Make the timer periodic */
-	sec = period/1000000;
-	ns = (period - (sec * 1000000)) * 1000;
-	itval.it_interval.tv_sec = sec;
-	itval.it_interval.tv_nsec = ns;
-	itval.it_value.tv_sec = sec;
-	itval.it_value.tv_nsec = ns;
-	ret = timerfd_settime (fd, 0, &itval, NULL);
-	return ret;
+    /* Make the timer periodic */
+    sec = period/1000000;
+    ns = (period - (sec * 1000000)) * 1000;
+    itval.it_interval.tv_sec = sec;
+    itval.it_interval.tv_nsec = ns;
+    itval.it_value.tv_sec = sec;
+    itval.it_value.tv_nsec = ns;
+    ret = timerfd_settime (fd, 0, &itval, NULL);
+    return ret;
 }
 
 static void wait_period (struct periodic_info *info)
 {
-	unsigned long long missed;
-	int ret;
+    unsigned long long missed;
+    int ret;
 
-	/* Wait for the next timer event. If we have missed any the
-	   number is written to "missed" */
-	ret = read (info->timer_fd, &missed, sizeof (missed));
-	if (ret == -1)
-	{
-		perror ("read timer");
-		return;
-	}
+    /* Wait for the next timer event. If we have missed any the
+       number is written to "missed" */
+    ret = read (info->timer_fd, &missed, sizeof (missed));
+    if (ret == -1)
+    {
+        perror ("read timer");
+        return;
+    }
 
-	/* "missed" should always be >= 1, but just to be sure, check it is not 0 anyway */
-	if (missed > 0)
-		info->wakeups_missed += (missed - 1);
+    /* "missed" should always be >= 1, but just to be sure, check it is not 0 anyway */
+    if (missed > 0)
+        info->wakeups_missed += (missed - 1);
 }
 
 static void end_periodic(struct periodic_info *info) {
@@ -193,7 +193,9 @@ void bullseyes( const char *colorString ){
     
     float radius = sqrt( (xmid*xmid) + (ymid*ymid));
     
-    for( int loop = 0; loop<300;loop++) {
+    unsigned int loop=0;
+    
+    while (1) {
                 
         for( int x=0; x<SIZE_X; x++) {
             
@@ -230,7 +232,9 @@ void bullseyes( const char *colorString ){
         sendOPCPixels();
         usleep(10000);
         
-    }
+        loop++;
+        
+    }        
     
 }
 
@@ -287,8 +291,8 @@ void stars(const char *colorString) {
     unsigned char b1 = parsehexdigits(colorString+4);
         
     int head=0;
-       
-    for( int loop = 0; loop<1500;loop++) {
+    
+    while (1) {
         
         int x=starsx[head];
         int y=starsy[head];
@@ -329,9 +333,11 @@ void plasma() {
    float ymid = SIZE_Y/2.0;
    
 //   float radius = sqrt( (xmid*xmid) + (ymid*ymid));
+
+   int loop = 0;
    
-   for( int loop = 0; loop<200;loop++) {
-       
+   while (1) {
+         
        for( int x=0; x<SIZE_X; x++) {
           
            for(int y=0;y<SIZE_Y;y++) {
@@ -355,6 +361,8 @@ void plasma() {
        
        sendOPCPixels();
        usleep(10000);
+       
+       loop++;
        
    }
        
@@ -406,46 +414,49 @@ void rockrose() {
     
     make_periodic( 5000 , &pi );
     
-    for( int scroll=0; scroll < (RR_X - SIZE_X) ; scroll++ ) {
+    while(1) {
+    
+        for( int scroll=0; scroll < (RR_X - SIZE_X) ; scroll++ ) {
         
-        for( unsigned char step=0; step < RR_STEPS ; step++ ) {          // Subpixel stepping
+            for( unsigned char step=0; step < RR_STEPS ; step++ ) {          // Subpixel stepping
 
-            for( int y=0; y< RR_Y; y++ ) {
+                for( int y=0; y< RR_Y; y++ ) {
                 
-               unsigned char *rrdatarow = rockrosedata + ( ( (RR_Y-1) - y ) * RR_X) + scroll;
+                   unsigned char *rrdatarow = rockrosedata + ( ( (RR_Y-1) - y ) * RR_X) + scroll;
                
-               unsigned char currentPixel = *rrdatarow;
+                   unsigned char currentPixel = *rrdatarow;
                
-               for( int x=0; x< SIZE_X; x++ ) {
+                   for( int x=0; x< SIZE_X; x++ ) {
                 
-                    int color; 
+                        int color; 
                                                                                                        
-                    rrdatarow++; 
+                        rrdatarow++; 
                         
-                    unsigned char nextPixel = *rrdatarow;
+                        unsigned char nextPixel = *rrdatarow;
                 
-                    color = (( currentPixel * (RR_STEPS - step)) / RR_STEPS ) + ( ( nextPixel * step) / RR_STEPS );
+                        color = (( currentPixel * (RR_STEPS - step)) / RR_STEPS ) + ( ( nextPixel * step) / RR_STEPS );
                         
-                    currentPixel = nextPixel;
+                        currentPixel = nextPixel;
                                                     
-                    SETRGB( x , y , color , color , color );
+                        SETRGB( x , y , color , color , color );
                 
+                    }
                 }
-            }
         
-            wait_period(&pi);
+                wait_period(&pi);
             
-            sendOPCPixels();
+                sendOPCPixels();
+        
+            }
+        }   
+    
+        if (pi.wakeups_missed) {
+        
+            fprintf(stderr,"Missed:%lu\r\n", (unsigned long) pi.wakeups_missed );
         
         }
-    }   
-    
-    if (pi.wakeups_missed) {
-        
-        fprintf(stderr,"Missed:%lu\r\n", (unsigned long) pi.wakeups_missed );
-        
     }
-    
+            
     end_periodic(&pi);
     
 }
@@ -523,12 +534,15 @@ void half( const char *colorString ) {
 int main( int argc, char **argv) {
     
     if (argc!=2) {
-            fprintf(stderr,"Usage  : leds command arg \r\n");
+            fprintf(stderr,"Usage  : leds command arg (no space between command and arg)\r\n");
             fprintf(stderr,"Command: S=Stars\r\n");
             fprintf(stderr,"         R=Rockrose\r\n");
             fprintf(stderr,"         B=BullsEye\r\n");
             fprintf(stderr,"         F=fullscreen, arg=RGB color (FFFFFF=white)\r\n");
             fprintf(stderr,"         H=halfscreen, arg=RGB color (FF0000=red)\r\n");
+            
+            fprintf(stderr,"Example: leds F00000F = Full panel to blue\r\n");
+            
             return(1);        
     }
     
