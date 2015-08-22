@@ -1,3 +1,0 @@
-# /etc/default/ntfs-3g
-
-NTFS3G_INITRAMFS="true"
