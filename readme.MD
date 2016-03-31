@@ -1,10 +1,10 @@
 # DigitPanelControllerBBB
-Software for a BeagleBone Black-based, Wifi controlable LED display panel.
+Software for a BeagleBone-based, controlable LED display panel. 
 
 ##Setup
-1. Start with a new BBB. 
+1. Start with a new BB. 
 
-1. Make sure you have enough power. The USB port does not provide enough power for the the Wifi, so you need an AC adapter.
+1. Make sure you have enough power. The USB port does not provide enough power, so you need an AC adapter.
 
 1. Use the flash updater to install the latest Debian software image from...
 
@@ -23,9 +23,7 @@ Software for a BeagleBone Black-based, Wifi controlable LED display panel.
   
   If you don't disable it, it will muck with the wifi adapter when you least expect it and cause unpredicable problems. This took me forever to figure out. Argh. 
   
-2. Disable HDMI. (NB: Skip for now, might now be nessisary)
-
- AdaFruit says that leaving HDMI on interfere with Wifi becuase it is so close to the adapter. 
+2. Disable HDMI. AdaFruit says that leaving HDMI on interfere with Wifi becuase it is so close to the adapter. NB: Not nessisary on the BeagleBone Green becuase there ain't no HDMI!
  ```
  mkdir /mnt/boot
  mount /dev/mmcblk0p1/mnt/boot
